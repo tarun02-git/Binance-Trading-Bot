@@ -1,88 +1,255 @@
-Binance Futures Testnet Trading Bot 🤖📈
-A robust, enterprise-grade command-line trading application built in Python. This bot is engineered to execute algorithmic trades safely on the Binance Futures Testnet (USDT-M) utilizing the official python-binance wrapper.
+# 🤖 Binance Futures Testnet Trading Bot
 
-By isolating business logic from the presentation layer and utilizing exact base-10 mathematics, this project guarantees strict adherence to exchange filters while providing a beautiful, colorized terminal user experience.
+A professional, command-line trading bot built in Python that executes trades on the **Binance USDT-M Futures Testnet**. Supports Market, Limit, Stop, and Take Profit orders with automatic price/quantity precision formatting and a rich terminal UI.
 
-🌟 Key Features
-Zero Financial Risk: Exclusively targets the https://testnet.binancefuture.com infrastructure, ensuring all executions utilize simulated testnet tokens with no actual monetary value.
+> ⚠️ **This bot operates exclusively on the Binance Futures Testnet — no real money is involved.**
 
-Advanced Order Typology: Supports immediate liquidity extraction (MARKET), liquidity provisioning (LIMIT), and dormant conditional triggers (STOP_LOSS_LIMIT).
+---
 
-Deterministic Precision: Automatically queries the exchange for dynamic PRICE_FILTER and LOT_SIZE rules, using the decimal module to format inputs and eliminate the notorious APIError(code=-1013): Filter failure rejections.
+## 📸 Preview
 
-Dual-Channel Telemetry: Avoids the standard Python root logger to prevent noise. It implements a terminal-friendly standard output alongside a silent RotatingFileHandler that persistently archives granular payloads and tracebacks without consuming excessive disk space.
+```
+╭─────────────────── Transmitting Order Request ───────────────────╮
+│ Symbol: BTCUSDT | Side: BUY | Type: MARKET                       │
+│ Quantity: 0.05 | Price: None | Stop Trigger: None                │
+╰──────────────────────────────────────────────────────────────────╯
 
-Resilient CLI UX: Built on typer and rich, featuring automated parameter validation, Tab-completion safety, and dynamic color-coded execution tables.
+         Execution Response Metrics
+┌──────────────────────┬──────────────────────┐
+│        Exchange Metric │ Reported Value       │
+├──────────────────────┼──────────────────────┤
+│               Order ID │ 123456789            │
+│      Execution Status  │ FILLED               │
+│           Trading Pair │ BTCUSDT              │
+│             Direction  │ BUY                  │
+│             Order Type │ MARKET               │
+│      Executed Quantity │ 0.050                │
+│     Average Fill Price │ 84321.50             │
+└──────────────────────┴──────────────────────┘
 
-🏗️ Project Architecture
+✓ SEQUENCE COMPLETE: Order for BTCUSDT processed successfully.
+```
+
+---
+
+## ✨ Features
+
+- ✅ **Market Orders** — Instant execution at best available price
+- ✅ **Limit Orders** — Execute only at your specified price
+- ✅ **Stop Orders** — Automatic stop-loss with limit price trigger
+- ✅ **Take Profit Orders** — Lock in gains at a target price
+- ✅ **Stop Market / Take Profit Market** — Trigger-based market execution
+- ✅ **Auto Precision Formatting** — Automatically rounds price & quantity to exchange rules
+- ✅ **Rich Terminal UI** — Color-coded panels and tables via the `rich` library
+- ✅ **Dual Logging** — Console + persistent `bot.log` file
+- ✅ **Input Validation** — Catches invalid symbols, sides, and order types before sending
+
+---
+
+## 🗂️ Project Structure
+
+```
 binance_testnet_bot/
 ├── bot/
-│   ├── init.py
+│   ├── client.py          # Authenticates and connects to Binance Futures Testnet
+│   ├── orders.py          # Core order placement logic (all order types)
+│   ├── validators.py      # CLI input validation callbacks
+│   └── logging_config.py  # Dual console + file logging setup
+├── .env                   # API credentials (never commit this!)
+├── .gitignore             # Excludes .env, venv, logs from git
+├── bot.log                # Auto-generated trade log
+├── cli.py                 # Main CLI entry point
+└── requirements.txt       # Python dependencies
+```
 
-│   ├── client.py             # Network connection & Testnet authentication
-│   ├── orders.py             # Order execution & mathematical formatting
-│   ├── validators.py         # Typer CLI input sanitization callbacks
-│   └── logging_config.py     # Dual-handler RotatingFile logger
-├── cli.py                    # Typer/Rich command-line entry point
-├── requirements.txt          # Explicit dependency mapping
-├──.env                      # Local cryptographic credentials (Git-ignored)
-└── README.md
+---
 
-⚙️ Prerequisites & Setup
-Python Installation: Ensure you have Python 3.8 or higher installed on your system.
+## ⚙️ Prerequisites
 
-Account Provisioning: Register for a simulated account at the(https://testnet.binancefuture.com).
+- Python 3.12+
+- A [GitHub](https://github.com) account
+- A [Binance Futures Testnet](https://testnet.binancefuture.com) account
 
-Generate API Keys: Navigate to the API Management section to generate your system-generated HMAC API Key and Secret Key.
+---
 
-Security Best Practices 🔐
-Never commit your API keys to version control. It is highly recommended to restrict your API key access to your trusted IP address and ensure that withdrawal permissions are strictly disabled.
+## 🚀 Installation & Setup
 
-🚀 Installation
-1. Clone the repository and navigate into the directory:
+### 1. Clone the repository
 
-Bash
-git clone https://github.com/YourUsername/Binance-Futures-Testnet-Bot.git
-cd Binance-Futures-Testnet-Bot
-2. Create and activate a Python virtual environment:
+```bash
+git clone https://github.com/YOUR_USERNAME/binance-testnet-bot.git
+cd binance-testnet-bot
+```
 
-Bash
-# macOS/Linux
-python3 -m venv venv
-source venv/bin/activate
+### 2. Create and activate a virtual environment
 
+```bash
 # Windows
 python -m venv venv
 venv\Scripts\activate
-3. Install dependencies:
 
-Bash
+# Mac / Linux
+python -m venv venv
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
-4. Configure Environment Variables:
-Create a .env file in the root directory and add your Testnet credentials:
+```
 
-Code snippet
-BINANCE_TESTNET_API_KEY=your_testnet_api_key_here
-BINANCE_TESTNET_SECRET_KEY=your_testnet_secret_key_here
-💻 Usage & Commands
-The application is triggered via the cli.py entry point. The system automatically fetches exchange filters and handles all fractional precision formatting (tickSize and stepSize) prior to network transmission.
+### 4. Get your Futures Testnet API keys
 
-1. Market Order (Immediate Execution)
-Consumes existing order book liquidity immediately.
+1. Go to 👉 [https://testnet.binancefuture.com](https://testnet.binancefuture.com)
+2. Click **"Log in with GitHub"**
+3. Scroll down to the **API Key** section
+4. Click **"Generate Key"**
+5. Copy both the **API Key** and **Secret Key**
 
-Bash
-python cli.py trade --symbol BTCUSDT --side BUY --type MARKET --qty 0.05
-2. Limit Order (Delayed Execution)
-Provides liquidity to the order book at a specific price threshold. Requires the --price (-p) parameter.
+> ⚠️ **Important:** These are Futures Testnet keys — they are completely separate from your real Binance account keys and from the Spot Testnet keys at `testnet.binance.vision`.
 
-Bash
-python cli.py trade --symbol ETHUSDT --side SELL --type LIMIT --qty 1.5 --price 3500.50
-3. Stop-Loss-Limit Order (Conditional Risk Management)
-Injects a dormant trigger that executes a Limit order upon the market crossing a specific price point. Requires both --price (the limit execution price) and --stop (the conditional trigger threshold).
+### 5. Configure your `.env` file
 
-Bash
-python cli.py trade --symbol SOLUSDT --side SELL --type STOP_LOSS_LIMIT --qty 10 --price 140 --stop 145
-📊 Monitoring & Logs
-The bot will print a beautiful, colorized summary of successful executions directly to your terminal. However, detailed network telemetry, API responses, and exception tracebacks are silently routed to the bot.log file in your root directory.
+Create a `.env` file in the project root:
 
-If an order fails, check this file to view the exact JSON payload that was transmitted to Binance and the specific HTTP error code returned.
+```env
+BINANCE_TESTNET_API_KEY=your_api_key_here
+BINANCE_TESTNET_SECRET_KEY=your_secret_key_here
+```
+
+> ⚠️ Never add spaces around the `=` sign and never commit this file to GitHub.
+
+---
+
+## 💻 Usage
+
+All commands follow this structure:
+
+```bash
+python cli.py --symbol <SYMBOL> --side <SIDE> --type <ORDER_TYPE> --qty <QUANTITY> [--price <PRICE>] [--stop <STOP_PRICE>]
+```
+
+### Options
+
+| Flag | Short | Description | Required |
+|------|-------|-------------|----------|
+| `--symbol` | `-s` | Trading pair e.g. `BTCUSDT` | ✅ Always |
+| `--side` | `-d` | `BUY` or `SELL` | ✅ Always |
+| `--type` | `-t` | Order type (see below) | ✅ Always |
+| `--qty` | `-q` | Quantity in base asset | ✅ Always |
+| `--price` | `-p` | Limit execution price | ⚠️ LIMIT, STOP, TAKE_PROFIT |
+| `--stop` | `-sp` | Stop trigger price | ⚠️ STOP, TAKE_PROFIT, STOP_MARKET, TAKE_PROFIT_MARKET |
+
+---
+
+## 📋 Order Type Examples
+
+### Market Order
+Executes immediately at the best available price.
+```bash
+python cli.py --symbol BTCUSDT --side BUY --type MARKET --qty 0.05
+```
+
+### Limit Order
+Executes only when the market reaches your specified price.
+```bash
+python cli.py --symbol BTCUSDT --side BUY --type LIMIT --qty 0.05 --price 60000
+```
+
+### Stop Order (Stop Loss)
+Places a limit sell order when the market drops to your trigger price.
+```bash
+python cli.py --symbol BTCUSDT --side SELL --type STOP --qty 0.05 --price 59900 --stop 60000
+```
+
+### Stop Market Order
+Places a market sell order when the trigger price is hit.
+```bash
+python cli.py --symbol BTCUSDT --side SELL --type STOP_MARKET --qty 0.05 --stop 60000
+```
+
+### Take Profit Order
+Places a limit sell order when the market rises to your trigger price.
+```bash
+python cli.py --symbol BTCUSDT --side SELL --type TAKE_PROFIT --qty 0.05 --price 95000 --stop 94000
+```
+
+### Take Profit Market Order
+Places a market sell order when the take profit trigger is hit.
+```bash
+python cli.py --symbol BTCUSDT --side SELL --type TAKE_PROFIT_MARKET --qty 0.05 --stop 94000
+```
+
+---
+
+## 🔍 Verifying Orders on the Testnet
+
+After placing an order, verify it at [https://testnet.binancefuture.com](https://testnet.binancefuture.com):
+
+| Order Type | Where to Find It |
+|------------|-----------------|
+| MARKET, LIMIT | **Orders → Open Orders → Basic** tab |
+| STOP, STOP_MARKET, TAKE_PROFIT, TAKE_PROFIT_MARKET | **Orders → Open Orders → Conditional** tab |
+
+---
+
+## 📦 Dependencies
+
+| Package | Purpose |
+|---------|---------|
+| `python-binance` | Binance API wrapper |
+| `python-dotenv` | Load credentials from `.env` file |
+| `typer[all]` | CLI framework |
+| `rich` | Terminal UI (panels, tables, colors) |
+
+Install all at once:
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## 🛡️ Security Notes
+
+- Never commit your `.env` file — it is excluded via `.gitignore`
+- Never use real Binance API keys with this bot
+- Always use keys from [testnet.binancefuture.com](https://testnet.binancefuture.com) only
+- Testnet keys expire periodically — regenerate them if you get a `-2015` error
+
+---
+
+## 📝 Logging
+
+All activity is logged in two places simultaneously:
+
+- **Terminal** — Color-coded output via `rich`
+- **`bot.log`** — Persistent file log with timestamps, useful for debugging
+
+```
+2026-03-26 11:05:08 - BinanceTestnetBot - INFO - Successfully authenticated and connected to the Binance Futures Testnet.
+2026-03-26 11:05:09 - BinanceTestnetBot - DEBUG - Transmitting finalized order payload: {'symbol': 'BTCUSDT', ...}
+2026-03-26 11:05:10 - BinanceTestnetBot - INFO - Order transmitted and accepted! Order ID: 123456789
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a new branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit: `git commit -m "Add your feature"`
+4. Push to the branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License — feel free to use, modify, and distribute it.
+
+---
+
+## ⚠️ Disclaimer
+
+This bot is built for **educational purposes** on the Binance Futures Testnet only. It does not constitute financial advice. Always do your own research before trading with real funds. The authors are not responsible for any financial losses.
